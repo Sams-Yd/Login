@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Google</title>
+<title>Login Sams Project</title>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
-body{
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
 font-family:Segoe UI,sans-serif;
 height:100vh;
 display:flex;
@@ -17,24 +22,43 @@ justify-content:center;
 align-items:center;
 background:linear-gradient(135deg,#667eea,#764ba2);
 }
+
 .card{
-background:white;
+background:rgba(255,255,255,.95);
 padding:40px;
 border-radius:20px;
-width:360px;
+width:380px;
 text-align:center;
 box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
-#status{
+
+h1{
+margin-bottom:20px;
+font-size:38px;
+}
+
+p{
+margin:15px 0;
+font-size:18px;
+}
+
+#google-btn{
 margin-top:20px;
-font-size:14px;
+display:flex;
+justify-content:center;
+}
+
+#status{
+margin-top:25px;
+font-size:16px;
+color:#444;
 }
 </style>
 </head>
 <body>
 
 <div class="card">
-<h2>Selamat Datang</h2>
+<h1>Selamat Datang</h1>
 <p>Login menggunakan Google</p>
 
 <div id="google-btn"></div>
