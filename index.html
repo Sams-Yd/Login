@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Google - Sams Project</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.4/croot.js"></script>
 </head>
 <body>
 
@@ -22,46 +23,29 @@
 
     <script>
         function handleCredentialResponse(response) {
-            // Token dari Google
-            const token = response.credential;
-            console.log("Token Google berhasil didapat:", token);
-
-            // Menampilkan status sementara
             const statusLabel = document.getElementById("status-text");
             statusLabel.innerText = "Sedang memverifikasi ke backend...";
             statusLabel.style.color = "blue";
 
-            // Alamat Backend Alwaysdata kamu
-            const backendUrl = "https://sams-yd.alwaysdata.net/login";
+            // Token dari Google
+            const data_json = { 
+                token: response.credential 
+            };
+            
+            // ALAMAT DOM CLOUD KAMU (Sudah diganti dari Alwaysdata)
+            const target_url = "https://hopeful-airport-tir.sgp.dom.my.id/login";
 
-            // Mengirim token ke Backend Golang menggunakan Fetch API
-            fetch(backendUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ token: token })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Gagal verifikasi di backend");
-                }
-                return response.json();
-            })
-            .then(result => {
-                console.log("Respon dari Backend:", result);
+            // MENGGUNAKAN CROOTJS (Lebih simpel daripada Fetch)
+            postJSON(target_url, "", "", data_json, (result) => {
+                console.log("Respon Backend:", result);
+                
                 if (result.message === "Login Sukses!") {
-                    statusLabel.innerText = "Selamat! Login Berhasil.";
+                    statusLabel.innerText = "Selamat Datang, Yudha! Login Berhasil.";
                     statusLabel.style.color = "green";
                 } else {
-                    statusLabel.innerText = "Login gagal: " + result.message;
+                    statusLabel.innerText = "Login Gagal: " + result.message;
                     statusLabel.style.color = "red";
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                statusLabel.innerText = "Terjadi kesalahan koneksi ke backend Alwaysdata.";
-                statusLabel.style.color = "red";
             });
         }
     </script>
