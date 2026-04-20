@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Google - Sams Project</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
     <script src="https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.4/croot.js"></script>
     
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -15,8 +16,10 @@
         
         <div id="g_id_onload"
              data-client_id="700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse">
+             data-callback="handleCredentialResponse"
+             data-itp_support="true">
         </div>
+        
         <div class="g_id_signin" data-type="standard"></div>
         
         <p id="status-text" style="margin-top: 20px; color: gray;">Silakan login untuk melanjutkan</p>
@@ -28,17 +31,17 @@
             statusLabel.innerText = "Sedang memverifikasi ke backend...";
             statusLabel.style.color = "blue";
 
-            // Token dari Google
+            // Menyiapkan data untuk dikirim ke Go
             const data_json = { 
                 token: response.credential 
             };
             
-            // ALAMAT DOM CLOUD KAMU (Sudah diganti dari Alwaysdata)
+            // Link backend DOM Cloud kamu (Pastikan HTTPS)
             const target_url = "https://hopeful-airport-tir.sgp.dom.my.id/login";
 
-            // MENGGUNAKAN CROOTJS (Lebih simpel daripada Fetch)
+            // Memanggil fungsi dari CrootJS
             postJSON(target_url, "", "", data_json, (result) => {
-                console.log("Respon Backend:", result);
+                console.log("Respon dari Backend:", result);
                 
                 if (result.message === "Login Sukses!") {
                     statusLabel.innerText = "Selamat Datang, Yudha! Login Berhasil.";
