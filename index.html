@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Google - CrootJS</title>
+    <title>Login Google - Sams Project</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.4/croot.js"></script>
 </head>
 <body>
 
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: sans-serif;">
         <h1>Selamat Datang di Aplikasi Saya</h1>
         
         <div id="g_id_onload"
@@ -28,25 +27,41 @@
             console.log("Token Google berhasil didapat:", token);
 
             // Menampilkan status sementara
-            document.getElementById("status-text").innerText = "Sedang memverifikasi ke backend...";
+            const statusLabel = document.getElementById("status-text");
+            statusLabel.innerText = "Sedang memverifikasi ke backend...";
+            statusLabel.style.color = "blue";
 
-            // URL Backend Golang kamu di DomCloud/Alwaysdata
+            // Alamat Backend Alwaysdata kamu
             const backendUrl = "https://sams-yd.alwaysdata.net/login";
 
-            // Mengirim data menggunakan fungsi dari CrootJS
-            const dataHeader = { "Content-Type": "application/json" };
-            const bodyData = { token: token };
-
-            // Fungsi postJSON dari CrootJS
-            postJSON(backendUrl, "none", "none", bodyData, (result) => {
+            // Mengirim token ke Backend Golang menggunakan Fetch API
+            fetch(backendUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Gagal verifikasi di backend");
+                }
+                return response.json();
+            })
+            .then(result => {
                 console.log("Respon dari Backend:", result);
                 if (result.message === "Login Sukses!") {
-                    document.getElementById("status-text").innerText = "Selamat! Login Berhasil.";
-                    document.getElementById("status-text").style.color = "green";
+                    statusLabel.innerText = "Selamat! Login Berhasil.";
+                    statusLabel.style.color = "green";
                 } else {
-                    document.getElementById("status-text").innerText = "Login gagal, cek konsol.";
-                    document.getElementById("status-text").style.color = "red";
+                    statusLabel.innerText = "Login gagal: " + result.message;
+                    statusLabel.style.color = "red";
                 }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                statusLabel.innerText = "Terjadi kesalahan koneksi ke backend Alwaysdata.";
+                statusLabel.style.color = "red";
             });
         }
     </script>
