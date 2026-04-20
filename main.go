@@ -7,60 +7,88 @@ import (
 	"os"
 )
 
-// Struktur untuk menerima data dari CrootJS
 type LoginRequest struct {
 	Token string `json:"token"`
 }
 
 func main() {
-	// Menentukan endpoint API
 	http.HandleFunc("/login", loginHandler)
 
-	// Mengambil port otomatis dari sistem DOM Cloud
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // Port lokal jika dijalankan di laptop
+		port = "8080"
 	}
 
-	fmt.Println("Backend jalan di port: " + port)
+	fmt.Println("Backend jalan di port:", port)
 
-	// Menjalankan server
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Printf("Gagal menjalankan server: %s\n", err)
+		fmt.Println("Gagal menjalankan server:", err)
 	}
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	// PENTING: Izinkan akses dari GitHub Pages (CORS)
+	// =========================
+	// CORS
+	// =========================
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
 
-	// Menangani permintaan awal browser (Preflight)
-	if r.Method == "OPTIONS" {
+	// Preflight Request
+	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	// Hanya terima metode POST
+	// Hanya POST
 	if r.Method != http.MethodPost {
-		http.Error(w, "Metode tidak diizinkan", http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Metode tidak diizinkan",
+		})
 		return
 	}
 
+	// =========================
+	// Ambil Data JSON
+	// =========================
 	var req LoginRequest
+
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, "Data tidak valid", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Data tidak valid",
+		})
 		return
 	}
 
-	// Verifikasi Token ke Google API
-	googleUrl := "https://oauth2.googleapis.com/tokeninfo?id_token=" + req.Token
-	resp, err := http.Get(googleUrl)
-	
-	if err != nil || resp.StatusCode != 200 {
+	if req.Token == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Token kosong",
+		})
+		return
+	}
+
+	// =========================
+	// Verifikasi Token ke Google
+	// =========================
+	googleURL := "https://oauth2.googleapis.com/tokeninfo?id_token=" + req.Token
+
+	resp, err := http.Get(googleURL)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Gagal terhubung ke Google",
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]string{
 			"message": "Login Gagal, Token tidak valid!",
@@ -68,7 +96,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Jika token asli dan valid
+	// =========================
+	// Login Berhasil
+	// =========================
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Login Sukses!",
