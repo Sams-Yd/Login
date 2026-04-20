@@ -1,38 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sams Project</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        body {
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh; display: flex; justify-content: center; align-items: center;
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); text-align: center; width: 350px;
-        }
-        #status-text { margin-top: 20px; font-size: 14px; color: #666; transition: 0.3s; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Sams Project</title>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+body{
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.login-card{
+    background:rgba(255,255,255,.95);
+    padding:40px;
+    border-radius:20px;
+    width:350px;
+    text-align:center;
+}
+#status-text{
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
-    <div class="login-card">
-        <h2>Selamat Datang</h2>
-        <p>Akses Sams Project menggunakan Google</p>
-        
-        <div id="g_id_onload"
-             data-client_id="700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-itp_support="true">
-        </div>
-        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
-        
-        <p id="status-text">Silakan login untuk melanjutkan</p>
+
+<div class="login-card">
+    <h2>Selamat Datang</h2>
+    <p>Akses Sams Project menggunakan Google</p>
+
+    <div id="g_id_onload"
+        data-client_id="700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse">
     </div>
 
-    <script type="module" src="script.js"></script>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <p id="status-text">Silakan login untuk melanjutkan</p>
+</div>
+
+<!-- SCRIPT BIASA -->
+<script src="script.js"></script>
+
 </body>
 </html>
