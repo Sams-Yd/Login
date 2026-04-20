@@ -1,33 +1,51 @@
-function handleCredentialResponse(response) {
-    const status = document.getElementById("status-text");
+import { setInner } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/element.min.js";
+import { postJSON } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/api.min.js";
 
-    status.innerHTML = "⏳ Memverifikasi...";
-    status.style.color = "blue";
+window.onload = function () {
 
-    fetch("https://hopeful-airport-tir.sgp.dom.my.id/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+    function handleLogin(response) {
+
+        setInner("status", "⏳ Memverifikasi...");
+
+        const url = "https://sams-yd.github.io/login";
+
+        const data = {
             token: response.credential
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message === "Login Sukses!") {
-            status.innerHTML = "✅ Login Berhasil!";
-            status.style.color = "green";
-        } else {
-            status.innerHTML = "❌ " + data.message;
-            status.style.color = "red";
-        }
-    })
-    .catch(err => {
-        console.log(err);
-        status.innerHTML = "❌ Gagal koneksi server";
-        status.style.color = "red";
-    });
-}
+        };
 
-window.handleCredentialResponse = handleCredentialResponse;
+        // PENTING:
+        // Jangan kosongkan header seperti error sebelumnya
+        postJSON(
+            url,
+            "Content-Type",
+            "application/json",
+            data,
+            function(result){
+
+                console.log(result);
+
+                if(result.message === "Login Sukses!"){
+                    setInner("status", "✅ Login Berhasil");
+                }else{
+                    setInner("status", "❌ " + result.message);
+                }
+
+            }
+        );
+    }
+
+    google.accounts.id.initialize({
+        client_id: "700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com",
+        callback: handleLogin
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById("google-btn"),
+        {
+            theme:"outline",
+            size:"large",
+            shape:"pill"
+        }
+    );
+
+};
