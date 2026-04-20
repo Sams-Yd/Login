@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Google - CrootJS</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.4/croot.js"></script>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+        <h1>Selamat Datang di Aplikasi Saya</h1>
+        
+        <div id="g_id_onload"
+             data-client_id="MASUKKAN_CLIENT_ID_DARI_GOOGLE_CONSOLE_DISINI"
+             data-callback="handleCredentialResponse">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
+        
+        <p id="status-text" style="margin-top: 20px; color: gray;">Silakan login untuk melanjutkan</p>
+    </div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            // Token dari Google
+            const token = response.credential;
+            console.log("Token Google berhasil didapat:", token);
+
+            // Menampilkan status sementara
+            document.getElementById("status-text").innerText = "Sedang memverifikasi ke backend...";
+
+            // URL Backend Golang kamu di DomCloud/Alwaysdata
+            const backendUrl = "https://url-backend-kamu.domcloud.dev/login";
+
+            // Mengirim data menggunakan fungsi dari CrootJS
+            const dataHeader = { "Content-Type": "application/json" };
+            const bodyData = { token: token };
+
+            // Fungsi postJSON dari CrootJS
+            postJSON(backendUrl, "none", "none", bodyData, (result) => {
+                console.log("Respon dari Backend:", result);
+                if (result.message === "Login Sukses!") {
+                    document.getElementById("status-text").innerText = "Selamat! Login Berhasil.";
+                    document.getElementById("status-text").style.color = "green";
+                } else {
+                    document.getElementById("status-text").innerText = "Login gagal, cek konsol.";
+                    document.getElementById("status-text").style.color = "red";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
