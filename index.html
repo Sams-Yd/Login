@@ -4,114 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sams Project</title>
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <style>
-        /* CSS untuk tampilan yang lebih 'enak' dilihat */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 100vh; display: flex; justify-content: center; align-items: center;
         }
-
         .login-card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); text-align: center; width: 350px;
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        #status-text {
-            margin-top: 25px;
-            font-weight: 500;
-            padding: 10px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .status-loading { color: #2196f3; background: #e3f2fd; }
-        .status-success { color: #4caf50; background: #e8f5e9; border: 1px solid #4caf50; }
-        .status-error { color: #f44336; background: #ffebee; border: 1px solid #f44336; }
-
-        /* Animasi biar halus */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .login-card { animation: fadeIn 0.8s ease-out; }
+        #status-text { margin-top: 20px; font-size: 14px; color: #666; transition: 0.3s; }
     </style>
 </head>
 <body>
-
     <div class="login-card">
-        <h1>Selamat Datang</h1>
-        <p>Akses Sams Project menggunakan akun Google kamu</p>
+        <h2>Selamat Datang</h2>
+        <p>Akses Sams Project menggunakan Google</p>
         
-        <div style="display: flex; justify-content: center;">
-            <div id="g_id_onload"
-                 data-client_id="700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse"
-                 data-itp_support="true">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-size="large"></div>
+        <div id="g_id_onload"
+             data-client_id="700649521479-pg9lerspa7oos4b5t2ihimf0j76g60l7.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-itp_support="true">
         </div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
         
         <p id="status-text">Silakan login untuk melanjutkan</p>
     </div>
 
-    <script type="module">
-        import { setInner } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/element.min.js";
-        import { postJSON } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/api.min.js";
-
-        window.handleCredentialResponse = (response) => {
-            const statusLabel = document.getElementById("status-text");
-            
-            // Tampilan saat loading
-            statusLabel.className = "status-loading";
-            setInner("status-text", "⏳ Sedang memverifikasi...");
-
-            const data_json = { 
-                token: response.credential 
-            };
-            
-            const target_url = "https://hopeful-airport-tir.sgp.dom.my.id/login";
-
-            postJSON(target_url, "", "", data_json, (result) => {
-                console.log("Backend Response:", result);
-                
-                if (result.message === "Login Sukses!") {
-                    statusLabel.className = "status-success";
-                    setInner("status-text", "✅ Berhasil! Selamat Datang, Yudha.");
-                    
-                    // Beri jeda 2 detik lalu pindah halaman (jika ada dashboard)
-                    // setTimeout(() => { window.location.href = "dashboard.html"; }, 2000);
-                } else {
-                    statusLabel.className = "status-error";
-                    setInner("status-text", "❌ Gagal: " + (result.message || "Server Error"));
-                }
-            });
-        };
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
