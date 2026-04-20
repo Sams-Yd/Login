@@ -1,5 +1,4 @@
 import { setInner } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/element.min.js";
-import { postJSON } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/api.min.js";
 
 const BACKEND_URL = "https://hopeful-airport-tir.sgp.dom.my.id/login";
 
@@ -7,31 +6,33 @@ function startGoogleLogin() {
 
     function handleLogin(response) {
 
-        setInner("status", "⏳ Memverifikasi login...");
+        setInner("status", "⏳ Memverifikasi...");
 
-        postJSON(
-            BACKEND_URL,
-            "Content-Type",
-            "application/json",
-            {
-                token: response.credential
+        fetch(BACKEND_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            function(result){
+            body: JSON.stringify({
+                token: response.credential
+            })
+        })
+        .then(res => res.json())
+        .then(result => {
 
-                console.log(result);
+            console.log(result);
 
-                if(result.message === "Login Sukses!"){
-                    setInner("status", "✅ Login Berhasil!");
-
-                    // pindah halaman jika ingin
-                    // window.location.href = "dashboard.html";
-
-                }else{
-                    setInner("status", "❌ " + result.message);
-                }
-
+            if(result.message === "Login Sukses!"){
+                setInner("status", "✅ Login Berhasil!");
+            }else{
+                setInner("status", "❌ " + result.message);
             }
-        );
+
+        })
+        .catch(error => {
+            console.error(error);
+            setInner("status", "❌ Gagal koneksi server");
+        });
     }
 
     google.accounts.id.initialize({
@@ -52,9 +53,9 @@ function startGoogleLogin() {
 
 window.onload = function () {
 
-    const tungguGoogle = setInterval(() => {
+    const tunggu = setInterval(() => {
         if(window.google && google.accounts){
-            clearInterval(tungguGoogle);
+            clearInterval(tunggu);
             startGoogleLogin();
         }
     }, 300);
