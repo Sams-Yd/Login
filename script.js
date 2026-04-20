@@ -2,7 +2,11 @@ import { setInner } from "https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.1/element.
 
 const BACKEND_URL = "https://hopeful-airport-tir.sgp.dom.my.id/login";
 
-function startGoogleLogin() {
+function parseJwt(token) {
+    return JSON.parse(atob(token.split('.')[1]));
+}
+
+function mulaiGoogleLogin() {
 
     function handleLogin(response) {
 
@@ -20,17 +24,27 @@ function startGoogleLogin() {
         .then(res => res.json())
         .then(result => {
 
-            console.log(result);
+            if(result.message === "Login Sukses!") {
 
-            if(result.message === "Login Sukses!"){
+                const user = parseJwt(response.credential);
+
+                localStorage.setItem("login", "true");
+                localStorage.setItem("name", user.name);
+                localStorage.setItem("email", user.email);
+                localStorage.setItem("photo", user.picture);
+
                 setInner("status", "✅ Login Berhasil!");
-            }else{
-                setInner("status", "❌ " + result.message);
+
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+
+            } else {
+                setInner("status", "❌ Login gagal");
             }
 
         })
-        .catch(error => {
-            console.error(error);
+        .catch(() => {
             setInner("status", "❌ Gagal koneksi server");
         });
     }
@@ -53,10 +67,14 @@ function startGoogleLogin() {
 
 window.onload = function () {
 
-    const tunggu = setInterval(() => {
+    if(localStorage.getItem("login") === "true"){
+        window.location.href = "dashboard.html";
+    }
+
+    const cek = setInterval(() => {
         if(window.google && google.accounts){
-            clearInterval(tunggu);
-            startGoogleLogin();
+            clearInterval(cek);
+            mulaiGoogleLogin();
         }
     }, 300);
 
